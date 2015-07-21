@@ -7,22 +7,25 @@
 //
 
 #import "Patient.h"
-
 @implementation Patient
-- (instancetype)initWithName:(NSString*)name
+- (instancetype)initWithName:(NSString*)name andCureBlock:(CureBlock)block
 {
     self = [super init];
     if (self) {
         self.name=name;
+        
+        [self performSelector:@selector(go2Doctor:) withObject:block afterDelay:(arc4random_uniform(11)+5)];
     }
     return self;
 }
--(void) go2Doctor{
-    [self.doctorDelegate feelWorse:self];
+
+-(void)go2Doctor:(CureBlock)cureBlock {
+    //__weak Patient* weakSelf=self;
+    //cureBlock(weakSelf);
+    //weak isn't necessary, because in block I make weakself
+    cureBlock(self);
 }
--(void) go2DoctorWIthAche{
-    [self.doctorDelegate haveAche:self];
-}
+
 -(void) takePill{
     NSLog(@"patient %@ takes a pill",self.name);
     [self decisionIfHelp];
@@ -38,5 +41,8 @@
 }
 -(void) decisionIfHelp{
     self.isHelped=arc4random_uniform(2);
+}
+-(void) dealloc {
+    NSLog(@"patient dealloc");
 }
 @end

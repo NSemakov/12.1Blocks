@@ -8,10 +8,8 @@
 
 #import "AppDelegate.h"
 #import "Patient.h"
-#import "Doctor.h"
-#import "FriendOfDoctor.h"
 @interface AppDelegate ()
-
+@property (strong,nonatomic) NSArray* arrayOfPations;
 @end
 
 @implementation AppDelegate
@@ -19,77 +17,39 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    // Uchenik
-    Doctor* doctor=[Doctor new];
+    // Superman
     
-    Patient* patient1=[[Patient alloc] initWithName:@"Ivan"];
+    CureBlock cureBlockForPatient=^(Patient* patient){
+        __weak Patient* weakObj=patient;
+        if (weakObj.temp>=37.f && weakObj.temp<=39.f) {
+            [weakObj takePill];
+        } else if (patient.temp>40){
+            [weakObj makeShot];
+        } else {
+            [weakObj haveRest];
+        }
+    };
+
+    
+    Patient* patient1=[[Patient alloc] initWithName:@"Ivan" andCureBlock:cureBlockForPatient];
     patient1.temp=41.f;
-    patient1.doctorDelegate=doctor;
+
     patient1.part=BodyPartHead;
-    Patient* patient2=[[Patient alloc] initWithName:@"Petr"];
+    Patient* patient2=[[Patient alloc] initWithName:@"Petr" andCureBlock:cureBlockForPatient];
     patient2.temp=37.f;
-    patient2.doctorDelegate=doctor;
+
     patient2.part=BodyPartHead;
-    Patient* patient3=[[Patient alloc] initWithName:@"Maria"];
+    Patient* patient3=[[Patient alloc] initWithName:@"Maria" andCureBlock:cureBlockForPatient];
     patient3.temp=35.f;
-    patient3.doctorDelegate=doctor;
+
     patient3.part=BodyPartLeg;
     
-    NSArray *patientsArray=[NSArray arrayWithObjects:patient1, patient2, patient3, nil];
-    for (Patient *obj in patientsArray) {
-        [obj go2Doctor];
-    }
+    self.arrayOfPations=[NSArray arrayWithObjects:patient1, patient2, patient3, nil];
+
     
     //----------
-    //end of Uchenik
-    
-    //Student
-    FriendOfDoctor* friendOfDoc1=[FriendOfDoctor new];
-    Patient* patient4=[[Patient alloc] initWithName:@"Natalia"];
-    patient4.temp=41.f;
-    patient4.doctorDelegate=friendOfDoc1;
-    patient4.part=BodyPartHead;
-    Patient* patient5=[[Patient alloc] initWithName:@"Svetlana"];
-    patient5.temp=37.f;
-    patient5.doctorDelegate=friendOfDoc1;
-    patient5.part=BodyPartLeg;
-    Patient* patient6=[[Patient alloc] initWithName:@"John"];
-    patient6.temp=35.f;
-    patient6.doctorDelegate=friendOfDoc1;
-    patient6.part=BodyPartHead;
-
-    NSArray *patientsArray2=[NSArray arrayWithObjects:patient1, patient2, patient3,
-                             patient4, patient5, patient6,nil];
-    for (Patient *obj in patientsArray2) {
-        [obj go2Doctor];
-    }
-    //--------
-    //end of Student
-    
-    //Master
-    for (Patient *obj in patientsArray2) {
-        [obj go2DoctorWIthAche];
-        
-    }
-    [doctor makeReport];
-    [friendOfDoc1 makeReport];
-    //--------
-    //end of Master
-    
-    //Superman
-    //for doctor (not for friendOfDoc)
-    for (Patient* obj in patientsArray) {
-        NSLog(@"did help? :%@ delegate: %@",obj.isHelped ? @"Yes":@"No" ,NSStringFromClass([obj.doctorDelegate class]));
-        if (obj.isHelped ==FALSE) {
-            obj.doctorDelegate=friendOfDoc1;
-        }
-        NSLog(@"delegate: %@",NSStringFromClass([obj.doctorDelegate class]));
-    }
-    
-    //---------
     //end of Superman
-    
-    return YES;
+        return YES;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
